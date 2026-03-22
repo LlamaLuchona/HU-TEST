@@ -1,0 +1,284 @@
+@model CeplanAuth.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Gestión de usuarios";
+    Layout = "_Layout";
+}
+
+<style>
+    body { margin: 0; }
+
+    .login-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: #EFEFEF;
+    }
+
+    .login-card-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    .login-card {
+        width: 420px;
+        background: white;
+        border-radius: 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,.12);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-card-header {
+        background: var(--ceplan-rojo);
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 1rem;
+    }
+    .login-card-header .help-icon {
+        color: white;
+        font-size: 1.1rem;
+        cursor: pointer;
+    }
+
+    .login-card-body {
+        padding: 2rem 2.5rem 1rem;
+        background: white;
+        position: relative;
+        min-height: 380px;
+    }
+    .login-card-body::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 140px;
+        background:
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 140'%3E%3Cpath fill='%23E8E8E8' fill-opacity='0.6' d='M0,140 L0,80 L60,40 L120,80 L180,20 L240,70 L300,10 L360,60 L420,30 L420,140 Z'/%3E%3Cpath fill='%23D8D8D8' fill-opacity='0.4' d='M0,140 L0,100 L80,65 L160,100 L240,50 L320,90 L420,55 L420,140 Z'/%3E%3Cpath fill='%23CFCFCF' fill-opacity='0.3' d='M0,140 L0,115 L100,85 L200,115 L300,75 L420,100 L420,140 Z'/%3E%3C/svg%3E")
+            no-repeat bottom / cover;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .login-form-inner { position: relative; z-index: 1; }
+
+    .login-card-footer {
+        background: rgba(200,200,200,.35);
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 .8rem;
+        gap: .8rem;
+    }
+    .footer-badge {
+        display: flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .6rem;
+        font-weight: 700;
+        color: #666;
+    }
+    .footer-badge .flag {
+        width: 18px; height: 12px;
+        background: linear-gradient(to right, #D52B1E 33%, white 33% 66%, #D52B1E 66%);
+        border: .5px solid #ccc;
+    }
+
+    .doc-tab-bar {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 1rem;
+    }
+    .doc-tab-bar .tab-btn {
+        background: #E0E0E0;
+        color: #555;
+        border: none;
+        border-radius: 4px 4px 0 0;
+        font-size: .8rem;
+        font-weight: 600;
+        padding: .28rem 1.1rem;
+        cursor: pointer;
+        transition: background .15s, color .15s;
+    }
+    .doc-tab-bar .tab-btn.active {
+        background: #333;
+        color: white;
+    }
+
+    .link-forgot {
+        color: var(--ceplan-azul);
+        font-size: .78rem;
+        text-decoration: none;
+    }
+    .link-forgot:hover { text-decoration: underline; }
+
+    .support-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .6rem;
+        font-size: .78rem;
+        color: #555;
+        margin-top: .8rem;
+    }
+    .support-row .support-icon {
+        font-size: 1.3rem;
+        color: var(--ceplan-azul);
+        flex-shrink: 0;
+    }
+
+    .error-alert {
+        background: #FFF0F0;
+        border: 1px solid #F5C6CB;
+        border-radius: 4px;
+        padding: .5rem .8rem;
+        font-size: .8rem;
+        color: #dc3545;
+        margin-bottom: .8rem;
+    }
+</style>
+
+<div class="login-page">
+
+    <div class="topbar">
+        <span class="brand">CEPLAN✓</span>
+        <div class="topbar-actions">
+            <span style="font-size:.75rem; opacity:.8">Gestión de usuarios</span>
+            <button class="help-btn">?</button>
+        </div>
+    </div>
+
+    <div class="login-card-wrapper">
+        <div class="login-card">
+
+            <div class="login-card-header">
+                <span class="help-icon bi bi-question-circle"></span>
+            </div>
+
+            <div class="login-card-body">
+                <div class="login-form-inner">
+
+                    <div class="doc-tab-bar">
+                        <button type="button" class="tab-btn @(Model.TipoDocumento == "DNI" ? "active" : "")"
+                                onclick="setTipoDoc('DNI')">DNI</button>
+                        <button type="button" class="tab-btn @(Model.TipoDocumento == "CE" ? "active" : "")"
+                                onclick="setTipoDoc('CE')">CE</button>
+                    </div>
+
+                    <form asp-action="Login" asp-controller="Account" method="post" id="loginForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="TipoDocumento" id="tipoDocInput" />
+
+                        <!-- Error general -->
+                        @if (!string.IsNullOrEmpty(Model.MensajeError))
+                        {
+                            <div class="error-alert">
+                                <i class="bi bi-exclamation-circle-fill me-1"></i>
+                                @Model.MensajeError
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" style="font-size:.82rem">Usuario</label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-person icon-left"></i>
+                                <input asp-for="Usuario"
+                                       class="form-control form-control-ceplan @(string.IsNullOrEmpty(Model.MensajeError) ? "" : "is-invalid")"
+                                       placeholder="Ingresar usuario"
+                                       autocomplete="username"
+                                       id="usuarioInput" />
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.MensajeError))
+                            {
+                                <div class="field-error"><i class="bi bi-exclamation-circle me-1"></i>Usuario incorrecto</div>
+                            }
+                            <span asp-validation-for="Usuario" class="field-error"></span>
+                        </div>
+
+                        <div class="mb-1">
+                            <label class="form-label fw-semibold" style="font-size:.82rem">Contraseña</label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-lock icon-left"></i>
+                                <input asp-for="Contrasena"
+                                       type="password"
+                                       class="form-control form-control-ceplan @(string.IsNullOrEmpty(Model.MensajeError) ? "" : "is-invalid")"
+                                       placeholder="Ingresar contraseña"
+                                       autocomplete="current-password"
+                                       id="passInput" />
+                                <i class="bi bi-eye icon-right" id="togglePass" onclick="togglePassword()"></i>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.MensajeError))
+                            {
+                                <div class="field-error"><i class="bi bi-exclamation-circle me-1"></i>Contraseña incorrecta</div>
+                            }
+                            <span asp-validation-for="Contrasena" class="field-error"></span>
+                        </div>
+
+                        <div class="mb-3 text-start">
+                            <a href="#" class="link-forgot">¿Olvidó su contraseña?</a>
+                        </div>
+
+                        <button type="submit" class="btn-ceplan mb-3" id="btnIngresar">
+                            Ingresar
+                        </button>
+
+                    </form>
+
+                    <div class="support-row">
+                        <i class="bi bi-headset support-icon"></i>
+                        <span>¿Necesita ayuda?, <a href="mailto:soporte@ceplan.gob.pe" class="link-forgot">contacte con el área de soporte.</a></span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="login-card-footer">
+                <div class="footer-badge">
+                    <div class="flag"></div>
+                    PERÚ
+                </div>
+                <div class="footer-badge" style="color:#A51C30; font-size:.55rem">
+                    Presidencia del<br>Consejo de Ministros
+                </div>
+                <div class="footer-badge" style="font-size:.55rem">
+                    Centro Nacional<br>de Planeamiento<br>Estratégico
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+<script>
+    function setTipoDoc(tipo) {
+        document.getElementById('tipoDocInput').value = tipo;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('usuarioInput').placeholder =
+            tipo === 'DNI' ? 'Ingresar número de DNI' : 'Ingresar número de CE';
+    }
+
+    function togglePassword() {
+        const inp = document.getElementById('passInput');
+        const ico = document.getElementById('togglePass');
+        if (inp.type === 'password') {
+            inp.type = 'text';
+            ico.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            inp.type = 'password';
+            ico.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function () {
+        const btn = document.getElementById('btnIngresar');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
+    });
+</script>
+}

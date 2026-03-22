@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CEPLAN</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --ceplan-rojo:      #A51C30;
+            --ceplan-rojo-dark: #8B1626;
+            --ceplan-azul:      #1B4F8A;
+            --ceplan-gris:      #F5F5F5;
+            --ceplan-texto:     #2D2D2D;
+            --ceplan-borde:     #D0D0D0;
+        }
+
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #EFEFEF; color: var(--ceplan-texto); }
+
+        .topbar {
+            background: var(--ceplan-rojo);
+            color: white;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            font-size: 0.82rem;
+        }
+        .topbar .brand {
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: .5px;
+            color: white;
+            text-decoration: none;
+        }
+        .topbar .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .topbar .help-btn {
+            background: rgba(255,255,255,.2);
+            border: none;
+            color: white;
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: .85rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .sidebar {
+            width: 52px;
+            min-height: calc(100vh - 44px);
+            background: var(--ceplan-rojo-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 1rem;
+            gap: .8rem;
+            flex-shrink: 0;
+        }
+        .sidebar a {
+            color: rgba(255,255,255,.7);
+            font-size: 1.1rem;
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 6px;
+            transition: background .2s, color .2s;
+            text-decoration: none;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(255,255,255,.2);
+            color: white;
+        }
+
+        .bg-mountains {
+            background:
+                linear-gradient(180deg, #FAFAFA 0%, #EFEFEF 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .bg-mountains::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 180px;
+            background:
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 180'%3E%3Cpath fill='%23D8D8D8' fill-opacity='0.5' d='M0,180 L0,100 L180,40 L360,100 L540,20 L720,90 L900,10 L1080,80 L1260,30 L1440,70 L1440,180 Z'/%3E%3Cpath fill='%23CCCCCC' fill-opacity='0.4' d='M0,180 L0,130 L120,80 L300,140 L480,60 L660,120 L840,50 L1020,110 L1200,60 L1440,100 L1440,180 Z'/%3E%3C/svg%3E")
+                no-repeat bottom center / cover;
+            pointer-events: none;
+        }
+
+        .footer-logos {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(200,200,200,.4);
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 1rem;
+            gap: 1rem;
+            font-size: .65rem;
+            color: #888;
+            font-weight: 600;
+        }
+        .footer-logos .logo-gov {
+            display: flex; align-items: center; gap: .3rem;
+        }
+
+        .doc-tabs .nav-link {
+            background: #E0E0E0;
+            color: #555;
+            border-radius: 4px 4px 0 0;
+            font-size: .82rem;
+            font-weight: 600;
+            padding: .3rem 1.2rem;
+            border: none;
+        }
+        .doc-tabs .nav-link.active {
+            background: var(--ceplan-texto);
+            color: white;
+        }
+
+        .form-control-ceplan {
+            border: 1px solid var(--ceplan-borde);
+            border-radius: 4px;
+            padding: .45rem .75rem;
+            font-size: .88rem;
+            background: white;
+        }
+        .form-control-ceplan:focus {
+            border-color: var(--ceplan-azul);
+            box-shadow: 0 0 0 2px rgba(27,79,138,.15);
+            outline: none;
+        }
+        .form-control-ceplan.is-invalid {
+            border-color: #dc3545;
+        }
+        .input-icon-wrap {
+            position: relative;
+        }
+        .input-icon-wrap .icon-left {
+            position: absolute; left: .6rem; top: 50%; transform: translateY(-50%);
+            color: #AAA; font-size: .9rem;
+        }
+        .input-icon-wrap .form-control-ceplan {
+            padding-left: 2rem;
+        }
+        .input-icon-wrap .icon-right {
+            position: absolute; right: .6rem; top: 50%; transform: translateY(-50%);
+            color: #AAA; font-size: .9rem; cursor: pointer;
+        }
+
+        .btn-ceplan {
+            background: var(--ceplan-azul);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: .5rem 1.5rem;
+            font-size: .88rem;
+            font-weight: 600;
+            width: 100%;
+            transition: background .2s;
+        }
+        .btn-ceplan:hover { background: #163F70; color: white; }
+        .btn-ceplan:disabled { background: #9DB4CC; cursor: not-allowed; }
+
+        .field-error {
+            color: #dc3545;
+            font-size: .78rem;
+            margin-top: .2rem;
+        }
+
+        .session-warning {
+            position: fixed;
+            top: 60px; right: 20px;
+            z-index: 9999;
+            width: 320px;
+            background: #FFF3CD;
+            border: 1px solid #FFC107;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,.15);
+            display: none;
+        }
+        .session-warning.show { display: block; animation: slideIn .3s ease; }
+        @@keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @RenderBody()
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,481 @@
+@model CeplanAuth.Models.UsuarioModel
+@{
+    ViewData["Title"] = "Perfil de usuario";
+    Layout = "_Layout";
+}
+
+<style>
+    body { margin:0; }
+
+    .app-shell {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .app-body {
+        display: flex;
+        flex: 1;
+    }
+
+    .inner-topbar {
+        background: var(--ceplan-rojo);
+        height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        gap: 1rem;
+        color: white;
+    }
+    .inner-topbar .brand { font-weight:700; font-size:.95rem; }
+    .inner-topbar .spacer { flex:1; }
+    .inner-topbar .topbar-icons { display:flex; align-items:center; gap:.8rem; font-size:1rem; }
+    .inner-topbar .user-chip {
+        display: flex; align-items: center; gap:.4rem;
+        background: rgba(255,255,255,.18);
+        border-radius: 4px;
+        padding: .2rem .6rem;
+        font-size: .75rem;
+    }
+    .inner-topbar .user-chip strong { font-size:.78rem; }
+
+    .sidebar {
+        width: 52px;
+        background: var(--ceplan-rojo-dark);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 1rem;
+        gap: .6rem;
+        flex-shrink: 0;
+    }
+    .sidebar .side-btn {
+        color: rgba(255,255,255,.65);
+        font-size: 1.1rem;
+        width: 36px; height:36px;
+        display:flex; align-items:center; justify-content:center;
+        border-radius:6px;
+        transition: background .2s, color .2s;
+        text-decoration: none;
+        cursor: pointer;
+        background: none; border:none;
+    }
+    .sidebar .side-btn:hover, .sidebar .side-btn.active {
+        background: rgba(255,255,255,.2);
+        color: white;
+    }
+
+    .main-content {
+        flex: 1;
+        background: #F5F5F5;
+        padding: 1.5rem 2rem;
+        overflow-y: auto;
+    }
+
+    .breadcrumb-ceplan {
+        font-size: .78rem;
+        color: #888;
+        margin-bottom: 1rem;
+    }
+    .breadcrumb-ceplan a { color:var(--ceplan-azul); text-decoration:none; }
+
+    .perfil-card {
+        background: white;
+        border: 1px solid #E5E5E5;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .perfil-card-header {
+        background: var(--ceplan-rojo);
+        padding: .6rem 1.5rem;
+        color: white;
+        font-size:.82rem;
+    }
+
+    .perfil-content { padding: 1.5rem; }
+
+    .avatar-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #F0F0F0;
+    }
+    .avatar-circle {
+        width: 56px; height: 56px;
+        background: #DDE4EE;
+        border-radius: 50%;
+        display: flex; align-items:center; justify-content:center;
+        font-size: 1.5rem;
+        color: var(--ceplan-azul);
+        flex-shrink: 0;
+    }
+    .avatar-info .nombre {
+        font-weight: 700;
+        font-size: .95rem;
+        color: var(--ceplan-texto);
+    }
+    .avatar-info .cargo {
+        font-size: .78rem;
+        color: #777;
+    }
+    .badge-estado {
+        display: inline-block;
+        font-size: .65rem;
+        font-weight: 700;
+        padding: .15rem .5rem;
+        border-radius: 3px;
+        background: #D4EDDA;
+        color: #155724;
+        margin-left: .5rem;
+        vertical-align: middle;
+    }
+
+    .perfil-tabs {
+        border-bottom: 2px solid #E0E0E0;
+        margin-bottom: 1.2rem;
+    }
+    .perfil-tabs .tab-item {
+        display: inline-block;
+        padding: .5rem 1.2rem;
+        font-size: .82rem;
+        font-weight: 600;
+        color: #888;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        text-decoration: none;
+        transition: color .15s, border-color .15s;
+    }
+    .perfil-tabs .tab-item.active {
+        color: var(--ceplan-azul);
+        border-bottom-color: var(--ceplan-azul);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem 2rem;
+    }
+    .info-field label {
+        font-size: .72rem;
+        color: #888;
+        font-weight: 600;
+        display: block;
+        margin-bottom: .15rem;
+    }
+    .info-field .value {
+        font-size: .85rem;
+        color: var(--ceplan-texto);
+        font-weight: 500;
+    }
+    .info-field .value.editable {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+    .info-field .value.editable .edit-icon {
+        color: #CCC;
+        font-size: .85rem;
+        cursor: pointer;
+    }
+    .info-field .value.editable .edit-icon:hover { color: var(--ceplan-azul); }
+
+    .page-footer {
+        background: rgba(200,200,200,.35);
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 1rem;
+        gap: .8rem;
+    }
+    .footer-badge { display:flex;align-items:center;gap:.3rem;font-size:.6rem;font-weight:700;color:#666; }
+    .flag { width:18px;height:12px;background:linear-gradient(to right,#D52B1E 33%,white 33% 66%,#D52B1E 66%);border:.5px solid #ccc; }
+
+    .session-overlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,.45);
+        z-index: 9998;
+        align-items: center;
+        justify-content: center;
+    }
+    .session-overlay.show { display:flex; }
+    .session-modal {
+        background: white;
+        border-radius: 6px;
+        padding: 2rem;
+        width: 380px;
+        text-align: center;
+        box-shadow: 0 8px 40px rgba(0,0,0,.3);
+        position: relative; z-index:9999;
+    }
+    .session-modal h6 { font-weight:700; margin-bottom:.5rem; }
+    .session-modal p { font-size:.85rem; color:#555; }
+    .countdown-badge {
+        display: inline-block;
+        background: #FFF3CD;
+        border: 1px solid #FFC107;
+        border-radius: 20px;
+        padding: .3rem 1rem;
+        font-weight: 700;
+        font-size:1rem;
+        color: #856404;
+        margin: .8rem 0;
+    }
+</style>
+
+<div class="app-shell">
+
+    <div class="inner-topbar">
+        <span class="brand">CEPLAN✓</span>
+        <span class="spacer"></span>
+        <div class="topbar-icons">
+            <i class="bi bi-question-circle"></i>
+            <i class="bi bi-bell"></i>
+            <i class="bi bi-envelope"></i>
+            <div class="user-chip">
+                <i class="bi bi-person-circle"></i>
+                <div>
+                    <strong>@Model.NombreCompleto</strong><br>
+                    <span style="opacity:.75">Operador</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-body">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <button class="side-btn active" title="Inicio"><i class="bi bi-house-fill"></i></button>
+            <button class="side-btn" title="Usuarios"><i class="bi bi-people-fill"></i></button>
+            <button class="side-btn" title="Reportes"><i class="bi bi-bar-chart-fill"></i></button>
+            <button class="side-btn" title="Configuración"><i class="bi bi-gear-fill"></i></button>
+            <button class="side-btn" title="Buscar"><i class="bi bi-search"></i></button>
+            <div style="flex:1"></div>
+            <form asp-action="Logout" asp-controller="Account" method="post" style="margin-bottom:.8rem;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="side-btn" title="Cerrar sesión"
+                        style="color:rgba(255,180,180,.8)">
+                    <i class="bi bi-box-arrow-left"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="main-content">
+
+            <div class="breadcrumb-ceplan">
+                <a href="#">Perfil de usuario</a>
+            </div>
+
+            <h5 class="fw-bold mb-3">Perfil de usuario</h5>
+
+            <div class="perfil-card">
+                <div class="perfil-card-header">Perfil de usuario</div>
+                <div class="perfil-content">
+
+                    <div class="avatar-row">
+                        <div class="avatar-circle">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div class="avatar-info">
+                            <div class="nombre">
+                                @Model.NombreCompleto
+                                <span class="badge-estado">@Model.Estado</span>
+                            </div>
+                            <div class="cargo">@Model.Cargo</div>
+                            <div style="font-size:.75rem;color:#999;">@Model.Dependencia</div>
+                        </div>
+                    </div>
+
+                    <div class="perfil-tabs">
+                        <a class="tab-item active" href="#">Información básica</a>
+                        <a class="tab-item" href="#">Responsabilidades</a>
+                        <a class="tab-item" href="#">Historial de responsabilidades</a>
+                    </div>
+
+                    <div class="info-grid">
+
+                        <div class="info-field">
+                            <label>Nombres</label>
+                            <div class="value">@Model.Nombres</div>
+                        </div>
+                        <div class="info-field">
+                            <label>Primer Apellido</label>
+                            <div class="value">@Model.PrimerApellido</div>
+                        </div>
+                        <div class="info-field">
+                            <label>Segundo Apellido</label>
+                            <div class="value">@(Model.SegundoApellido ?? "—")</div>
+                        </div>
+
+                        <div class="info-field">
+                            <label>Tipo de Documento de Identidad</label>
+                            <div class="value">@Model.TipoDocumento</div>
+                        </div>
+                        <div class="info-field">
+                            <label>Nº de Documento de Identidad</label>
+                            <div class="value">@Model.NumeroDocumento</div>
+                        </div>
+                        <div class="info-field">
+                            <label>Fecha de Nacimiento</label>
+                            <div class="value">@Model.FechaNacimientoFormatted</div>
+                        </div>
+
+                        <div class="info-field">
+                            <label>Nacionalidad</label>
+                            <div class="value">@(Model.Nacionalidad ?? "Peruana")</div>
+                        </div>
+                        <div class="info-field">
+                            <label>Sexo</label>
+                            <div class="value">@(Model.Sexo ?? "—")</div>
+                        </div>
+                        <div class="info-field">
+                            <label>Correo electrónico principal</label>
+                            <div class="value editable">
+                                @(Model.CorreoPrincipal ?? "—")
+                                <i class="bi bi-pencil edit-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="info-field">
+                            <label>Correo electrónico secundario</label>
+                            <div class="value editable">
+                                @(string.IsNullOrEmpty(Model.CorreoSecundario) ? "Opcional" : Model.CorreoSecundario)
+                                <i class="bi bi-pencil edit-icon"></i>
+                            </div>
+                        </div>
+                        <div class="info-field">
+                            <label>Teléfono Móvil</label>
+                            <div class="value editable">
+                                @(Model.TelefonoMovil ?? "—")
+                                <i class="bi bi-pencil edit-icon"></i>
+                            </div>
+                        </div>
+                        <div class="info-field">
+                            <label>Teléfono secundario</label>
+                            <div class="value editable">
+                                @(string.IsNullOrEmpty(Model.TelefonoSecundario) ? "Opcional" : Model.TelefonoSecundario)
+                                <i class="bi bi-pencil edit-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="info-field">
+                            <label>Tipo de Contratación</label>
+                            <div class="value">@(Model.TipoContratacion ?? "—")</div>
+                        </div>
+                        <div class="info-field">
+                            <label>Fecha de contratación</label>
+                            <div class="value">@Model.FechaContratacionFormatted</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="page-footer">
+        <div class="footer-badge"><div class="flag"></div> PERÚ</div>
+        <div class="footer-badge" style="color:#A51C30;font-size:.55rem">Presidencia del<br>Consejo de Ministros</div>
+        <div class="footer-badge" style="font-size:.55rem">Centro Nacional<br>de Planeamiento<br>Estratégico</div>
+    </div>
+
+</div>
+
+<div class="session-overlay" id="sessionOverlay">
+    <div class="session-modal">
+        <i class="bi bi-clock-history" style="font-size:2rem;color:#FFC107;"></i>
+        <h6 class="mt-2">Su sesión está a punto de cerrar</h6>
+        <p>Por seguridad, la sesión se cerrará automáticamente en:</p>
+        <div class="countdown-badge" id="countdownDisplay">2:00</div>
+        <p style="font-size:.78rem;color:#888">¿Desea continuar trabajando?</p>
+        <div class="d-flex gap-2 justify-content-center mt-2">
+            <button class="btn btn-sm"
+                    style="background:var(--ceplan-azul);color:white;font-weight:600;padding:.4rem 1.2rem;"
+                    onclick="extenderSesion()">
+                Extender sesión
+            </button>
+            <form asp-action="Logout" asp-controller="Account" method="post" style="margin:0">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-outline-secondary" style="font-size:.82rem;">
+                    Cerrar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let warningShown = false;
+    let countdownInterval = null;
+    let secondsLeft = 120;
+
+    setInterval(verificarSesion, 30000);
+
+    function verificarSesion() {
+        fetch('/Account/VerificarSesion')
+            .then(r => r.json())
+            .then(data => {
+                if (!data.valida) {
+                    window.location.href = '/Account/SesionExpirada';
+                    return;
+                }
+                if (data.minutosRestantes <= 2 && !warningShown) {
+                    mostrarAdvertencia(data.minutosRestantes * 60);
+                }
+            })
+            .catch(() => {});
+    }
+
+    function mostrarAdvertencia(segundos) {
+        warningShown = true;
+        secondsLeft = segundos || 120;
+        document.getElementById('sessionOverlay').classList.add('show');
+        actualizarCountdown();
+        countdownInterval = setInterval(() => {
+            secondsLeft--;
+            actualizarCountdown();
+            if (secondsLeft <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = '/Account/SesionExpirada';
+            }
+        }, 1000);
+    }
+
+    function actualizarCountdown() {
+        const m = Math.floor(secondsLeft / 60);
+        const s = secondsLeft % 60;
+        document.getElementById('countdownDisplay').textContent =
+            m + ':' + String(s).padStart(2, '0');
+    }
+
+    function extenderSesion() {
+        fetch('/Account/ExtenderSesion', { method: 'POST',
+            headers: { 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                clearInterval(countdownInterval);
+                warningShown = false;
+                document.getElementById('sessionOverlay').classList.remove('show');
+            }
+        });
+    }
+
+    document.addEventListener('click', () => {
+        if (!warningShown) {
+            fetch('/Account/ExtenderSesion', { method: 'POST',
+                headers: { 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || '' }
+            }).catch(() => {});
+        }
+    });
+</script>
+}
