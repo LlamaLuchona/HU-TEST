@@ -15,11 +15,10 @@ namespace CeplanAuth.Controllers
             _httpContext = httpContext;
         }
 
-        // ── GET: /Account/Login ───────────────────────────────────
         [HttpGet]
         public IActionResult Login(string? tipoDoc)
         {
-            // Si ya tiene sesión, ir al perfil
+
             if (HttpContext.Session.GetInt32("UsuarioId").HasValue)
                 return RedirectToAction("Perfil", "Home");
 
@@ -30,7 +29,6 @@ namespace CeplanAuth.Controllers
             return View(vm);
         }
 
-        // ── POST: /Account/Login ──────────────────────────────────
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -49,7 +47,6 @@ namespace CeplanAuth.Controllers
             switch (resultado.Resultado)
             {
                 case "OK":
-                    // Guardar sesión
                     HttpContext.Session.SetInt32("UsuarioId", resultado.UsuarioId!.Value);
                     HttpContext.Session.SetString("TipoDocumento", model.TipoDocumento);
                     HttpContext.Session.SetString("NumeroDocumento", model.Usuario.Trim());
@@ -59,22 +56,19 @@ namespace CeplanAuth.Controllers
                 case "CUENTA_BLOQUEADA":
                     return RedirectToAction("CuentaBloqueada");
 
-                default: // CREDENCIALES_INVALIDAS
+                default: 
                     model.MensajeError = resultado.Mensaje;
                     model.TipoError = resultado.Resultado;
                     model.CVF = resultado.CVF;
                     return View(model);
             }
         }
-
-        // ── GET: /Account/CuentaBloqueada ─────────────────────────
         [HttpGet]
         public IActionResult CuentaBloqueada()
         {
             return View();
         }
 
-        // ── POST: /Account/Logout ─────────────────────────────────
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Logout()
@@ -83,7 +77,6 @@ namespace CeplanAuth.Controllers
             return RedirectToAction("Login");
         }
 
-        // ── GET: /Account/SesionExpirada ──────────────────────────
         [HttpGet]
         public IActionResult SesionExpirada()
         {
@@ -91,7 +84,6 @@ namespace CeplanAuth.Controllers
             return View();
         }
 
-        // ── POST: /Account/ExtenderSesion (AJAX) ──────────────────
         [HttpPost]
         public IActionResult ExtenderSesion()
         {
@@ -102,7 +94,6 @@ namespace CeplanAuth.Controllers
             return Json(new { success = true });
         }
 
-        // ── GET: /Account/VerificarSesion (AJAX polling) ──────────
         [HttpGet]
         public IActionResult VerificarSesion()
         {

@@ -21,14 +21,12 @@ namespace CeplanAuth.Data
                 ?? throw new InvalidOperationException("Connection string 'CeplanDB' not found.");
         }
 
-        // ── Hash SHA-256 ──────────────────────────────────────────
         public static string HashContrasena(string contrasena)
         {
             var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(contrasena));
             return Convert.ToHexString(bytes).ToLower();
         }
 
-        // ── Validar Login ─────────────────────────────────────────
         public async Task<ResultadoLogin> ValidarLoginAsync(
             string tipoDoc, string numeroDoc, string contrasena, string ip)
         {
@@ -63,7 +61,6 @@ namespace CeplanAuth.Data
             return resultado;
         }
 
-        // ── Obtener usuario por ID ─────────────────────────────────
         public async Task<UsuarioModel?> ObtenerUsuarioPorIdAsync(int id)
         {
             await using var conn = new SqlConnection(_connectionString);

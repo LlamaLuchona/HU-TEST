@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CeplanAuth.Models
 {
-    // ─── Login ────────────────────────────────────────────────────
+
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Ingrese su usuario.")]
@@ -12,16 +12,16 @@ namespace CeplanAuth.Models
         [DataType(DataType.Password)]
         public string Contrasena { get; set; } = string.Empty;
 
-        public string TipoDocumento { get; set; } = "DNI"; // DNI | CE
+        public string TipoDocumento { get; set; } = "DNI"; 
 
         public string? MensajeError { get; set; }
-        public string? TipoError { get; set; }  // CREDENCIALES_INVALIDAS | CUENTA_BLOQUEADA
+        public string? TipoError { get; set; } 
         public int CVF { get; set; } = 0;
     }
 
-    // ─── Usuario ──────────────────────────────────────────────────
     public class UsuarioModel
     {
+
         public int Id { get; set; }
         public string TipoDocumento { get; set; } = "DNI";
         public string NumeroDocumento { get; set; } = string.Empty;
@@ -43,16 +43,15 @@ namespace CeplanAuth.Models
         public int CVF { get; set; }
         public DateTime? FechaUltimoAcceso { get; set; }
 
-        // Computed
         public string NombreCompleto => $"{PrimerApellido} {SegundoApellido}, {Nombres}".Trim();
         public string FechaNacimientoFormatted => FechaNacimiento?.ToString("dd/MM/yyyy") ?? "";
         public string FechaContratacionFormatted => FechaContratacion?.ToString("dd/MM/yyyy") ?? "";
     }
 
-    // ─── Resultado de login ────────────────────────────────────────
+
     public class ResultadoLogin
     {
-        public string Resultado { get; set; } = string.Empty;  // OK | CREDENCIALES_INVALIDAS | CUENTA_BLOQUEADA
+        public string Resultado { get; set; } = string.Empty; 
         public string Mensaje { get; set; } = string.Empty;
         public int? UsuarioId { get; set; }
         public int CVF { get; set; }

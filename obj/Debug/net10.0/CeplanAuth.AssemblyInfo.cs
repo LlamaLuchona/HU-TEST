@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CeplanAuth")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c23c50dfd42c3d71538d76898013b856fe0e93f9")]
 [assembly: System.Reflection.AssemblyProductAttribute("CeplanAuth")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CeplanAuth")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

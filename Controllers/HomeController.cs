@@ -13,7 +13,6 @@ namespace CeplanAuth.Controllers
             _repo = repo;
         }
 
-        // ── Guard: verificar sesión activa ────────────────────────
         private bool SesionActiva()
         {
             var uid = HttpContext.Session.GetInt32("UsuarioId");
@@ -29,12 +28,11 @@ namespace CeplanAuth.Controllers
                 return false;
             }
 
-            // Actualizar actividad en cada request
+
             HttpContext.Session.SetString("UltimaActividad", DateTime.Now.ToString("o"));
             return true;
         }
 
-        // ── GET: /Home/Perfil ─────────────────────────────────────
         public async Task<IActionResult> Perfil()
         {
             if (!SesionActiva())
@@ -52,7 +50,6 @@ namespace CeplanAuth.Controllers
             return View(usuario);
         }
 
-        // ── GET: /Home/Error ──────────────────────────────────────
         public IActionResult Error()
         {
             return View();

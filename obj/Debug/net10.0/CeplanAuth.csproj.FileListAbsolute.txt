@@ -125,3 +125,4 @@ D:\Proyectos\HU-TEST\CeplanAuth\obj\Debug\net10.0\refint\CeplanAuth.dll
 D:\Proyectos\HU-TEST\CeplanAuth\obj\Debug\net10.0\CeplanAuth.pdb
 D:\Proyectos\HU-TEST\CeplanAuth\obj\Debug\net10.0\CeplanAuth.genruntimeconfig.cache
 D:\Proyectos\HU-TEST\CeplanAuth\obj\Debug\net10.0\ref\CeplanAuth.dll
+D:\Proyectos\HU-TEST\CeplanAuth\obj\Debug\net10.0\CeplanAuth.sourcelink.json
